@@ -14,12 +14,12 @@ class TableTunneExample extends StatefulWidget {
 class _TableTunneExampleState extends State<TableTunneExample> {
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
-      .toggledOff; // Can be toggled on/off by longpressing a date
-  DateTime _focusedDay = DateTime.now().subtract(const Duration(days: 3));
+
+  // Can be toggled on/off by longpressing a date
+  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
+
+  DateTime _focusedDay = DateTime.now().subtract(const Duration(days: 0));
   DateTime? _selectedDay;
-  DateTime? _rangeStart;
-  DateTime? _rangeEnd;
 
   @override
   void initState() {
@@ -54,31 +54,10 @@ class _TableTunneExampleState extends State<TableTunneExample> {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
-        _rangeStart = null; // Important to clean those
-        _rangeEnd = null;
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
       _selectedEvents.value = _getEventsForDay(selectedDay);
-    }
-  }
-
-  void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
-    setState(() {
-      _selectedDay = null;
-      _focusedDay = focusedDay;
-      _rangeStart = start;
-      _rangeEnd = end;
-      _rangeSelectionMode = RangeSelectionMode.toggledOn;
-    });
-
-    // `start` or `end` could be null
-    if (start != null && end != null) {
-      _selectedEvents.value = _getEventsForRange(start, end);
-    } else if (start != null) {
-      _selectedEvents.value = _getEventsForDay(start);
-    } else if (end != null) {
-      _selectedEvents.value = _getEventsForDay(end);
     }
   }
 
@@ -91,8 +70,6 @@ class _TableTunneExampleState extends State<TableTunneExample> {
             focusedDay: _focusedDay,
             availableGestures: AvailableGestures.horizontalSwipe,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            rangeStartDay: _rangeStart,
-            rangeEndDay: _rangeEnd,
             calendarFormat: _calendarFormat,
             rangeSelectionMode: _rangeSelectionMode,
             eventLoader: _getEventsForDay,
@@ -102,7 +79,7 @@ class _TableTunneExampleState extends State<TableTunneExample> {
               outsideDaysVisible: false,
             ),
             onDaySelected: _onDaySelected,
-            onRangeSelected: _onRangeSelected,
+            // onRangeSelected: _onRangeSelected,
             onFormatChanged: (format) {
               if (_calendarFormat != format) {
                 setState(() {
